@@ -3,7 +3,7 @@ This arduino firmware turns ESP-8266 into MQTT-enabled plug&play sensor platform
 * Movement detection sensors (optical IR sensors and Parralax X-Band motion detector, up to 3 at one device)
 DHT22 weather sensors
 * 4-ch LED strips dimmer through Modbus/RS-485: http://github.com/vasimv/StmDimmer-4ch
-* Internal button and LED 
+* Internal ADC reading, flash button (GPIO0) and LED (GPIO2)
 * Simple thermostat (requires DHT-22) with two relays to control indoor (fan) and outdoor (compressor) units
 * HC-SR04 and Maxbotix serial sonars
 * Sonoff basic switch and Sonoff touch wall switch (last one can be configured to automatically turn on relay when pressed button or to control it through OpenHAB or HomeAssistant)
@@ -20,6 +20,8 @@ Before compile you have to update file esp-sensors.h to uncomment modules you ne
 At first start - it'll switch to configuration mode to set Wifi and MQTT parameters. The device will start its own WiFi network with name like "espx-xxxxxxxx". You must connect to the network (default password is "passtest"), then go to "http://192.168.4.1" and set WiFi network name, password and MQTT broker's IP address (default username/password for MQTT is "testuser"/"testtest", you can redefine them in esp-sensors.h at compilation).
 
 If the device loses the network for long time (more than 60 seconds) - it'll turn configuration mode for 3 minutes (after this it'll try to connect to your network again).
+
+Some sensors can be turned off (DHT-22, internal ADC) through MQTT.
 
 
 ADVANCED
