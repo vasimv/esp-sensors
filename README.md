@@ -1,7 +1,7 @@
 This arduino firmware turns ESP-8266 into MQTT-enabled plug&play sensor platform. It allows to receive updates and control for following sensors and devices:
 
 * Movement detection sensors (optical IR sensors and Parralax X-Band motion detector, up to 3 at one device)
-DHT22 weather sensors
+* DHT22 weather sensors
 * 4-ch LED strips dimmer through Modbus/RS-485: http://github.com/vasimv/StmDimmer-4ch
 * Internal ADC reading, flash button (GPIO0) and LED (GPIO2)
 * Simple thermostat (requires DHT-22) with two relays to control indoor (fan) and outdoor (compressor) units
@@ -28,11 +28,17 @@ ADVANCED
 
 It isn't hard to add other sensors/devices to this firmware, you have to create module with few functions to control it and report its statuses through MQTT. Modules are defined in source files:
 
-Sonars - sonar.h/sonar.cpp
-Movement detection - moveir.h/moveir.cpp
-Internal LED and button - internal.h/internal.cpp
-Sonoff basic and touch - switch.h/switch.cpp
-Thermostat - thermostat.h/thermostat.cpp
-Dimmer - dimmer.h/dimmer.cpp
-DHT22 - weather.h/weather.cpp
+* Sonars - sonar.h/sonar.cpp
+* Movement detection - moveir.h/moveir.cpp
+* Internal LED and button - internal.h/internal.cpp
+* Sonoff basic and touch - switch.h/switch.cpp
+* Thermostat - thermostat.h/thermostat.cpp
+* Dimmer - dimmer.h/dimmer.cpp
+* DHT22 - weather.h/weather.cpp
 
+* void setup_*() functions do initialize hardware (pins and such)
+* void loop_*() functions do iterations at about every 10ms (can be delayed because other modules and stuff)
+* void refresh_*(boolean flagForce) functions will be called at every 200 ms (REFRESH_TIME in esp-sensors.h), only when connected to MQTT broker. Variable flagForce is set at every 2 seconds, modules will republish its values even if nothing changed
+* void pnp_*() functions will be called after connecting to broker, to publish Plug&play information about sensors
+* void subscribe_*() functions will be called at same time as pnp_* to subscribe to topics
+* boolean mqtt_*(char *topicCut, char *payload) will be called at incoming MQTT messages, should return true if found topic for the module
