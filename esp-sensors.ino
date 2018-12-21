@@ -415,14 +415,14 @@ void setup() {
 
 // Force send gratious ARP to prevent losing network
 extern "C" {
-  char *netif_list;
+  extern struct netif *netif_list;
   uint8_t etharp_request(char *, char *);
 }
 
 unsigned long lastARP = 0;
 
 void forceARP() {
-  char *netif = netif_list;
+  char *netif = (char *) netif_list;
 
   if ((millis() - lastARP) < 500)
     return;
@@ -477,6 +477,10 @@ void loop() {
     ArduinoOTA.handle();
     forceARP();
   }
+
+  // Check configuration web server
+  if (FlagConfigure)
+    server.handleClient();
 
 
   // Periodic call to refresh functions (if we're connected only!)
