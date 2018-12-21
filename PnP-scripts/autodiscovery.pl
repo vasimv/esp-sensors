@@ -59,7 +59,7 @@ while (<IN>) {
 close(IN);
 open(OUT, ">>" . $groupsFile);
 foreach my $group (keys %allgroups) {
-	if (!exists($curgroups{$group})) {
+	if (!exists($curgroups{$group}) && ("$group" ne "")) {
 		print OUT "Group $group\n";
 	}
 }
@@ -69,7 +69,7 @@ sleep(5);
 
 foreach my $device (keys %devices) {
 	my $deviceFile = $openhabItemsDir . "/" . $device . ".items";
-	if (! -f $deviceFile) {
+	if (! -f $deviceFile && ("$device" ne "")) {
 		print "Creating items file $deviceFile\n";
 		open(OUT, ">", $deviceFile);
 		my %items = %{$devices{$device}};

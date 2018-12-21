@@ -42,6 +42,8 @@ my @excludeHistory;
 
 foreach my $device (keys %devices) {
 	my %items = %{$devices{$device}};
+  if ($device eq "")
+    next;
 	my @deviceParts = split(/[_-]/, $device);
 	print "Device $device\n";
 	foreach my $item (keys %items) {
