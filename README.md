@@ -1,7 +1,7 @@
 This arduino firmware turns ESP-8266 into MQTT-enabled plug&play sensor platform. It allows to receive updates and control for following sensors and devices:
 
 * Movement detection sensors (optical IR sensors and Parralax X-Band motion detector, up to 3 at one device)
-* DHT22 weather sensors
+* DHT22 and GY-39 (serial mode) weather sensors
 * 4-ch LED strips dimmer through Modbus/RS-485: http://github.com/vasimv/StmDimmer-4ch
 * Internal ADC reading, flash button (GPIO0) and LED (GPIO2)
 * Simple thermostat (requires DHT-22) with two relays to control indoor (fan) and outdoor (compressor) units
@@ -35,6 +35,7 @@ It isn't hard to add other sensors/devices to this firmware, you have to create 
 * Thermostat - thermostat.h/thermostat.cpp
 * Dimmer - dimmer.h/dimmer.cpp
 * DHT22 - weather.h/weather.cpp
+* GY-39 (serial) - weather.h/weather.cpp
 
 * void setup_*() functions do initialize hardware (pins and such)
 * void loop_*() functions do iterations at about every 10ms (can be delayed because other modules and stuff)
