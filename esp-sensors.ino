@@ -77,7 +77,7 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
   if (mqtt_sonar(topicCut, payloadBuffer))
     return;
 #endif
-#ifdef DHT22_CONTROL
+#if defined(DHT22_CONTROL) || defined(GY39_CONTROL)
   if (mqtt_weather(topicCut, payloadBuffer))
     return;
 #endif
@@ -115,7 +115,7 @@ void pnpAndSubscribe() {
   pnp_sonar();
   subscribe_sonar();
 #endif
-#ifdef DHT22_CONTROL
+#if defined(DHT22_CONTROL) || defined(GY39_CONTROL)
   pnp_weather();
   subscribe_weather();
 #endif
@@ -372,7 +372,7 @@ void setup() {
 #if defined(MAXBOTIX_CONTROL) || defined(HCSR04_CONTROL)
   setup_sonar();
 #endif
-#ifdef DHT22_CONTROL
+#if defined(DHT22_CONTROL) || defined(GY39_CONTROL)
   setup_weather();
 #endif
 #ifdef SONOFF_CONTROL
@@ -458,7 +458,7 @@ void loop() {
 #if defined(MAXBOTIX_CONTROL) || defined(HCSR04_CONTROL)
   loop_sonar();
 #endif
-#ifdef DHT22_CONTROL
+#if defined(DHT22_CONTROL) || defined(GY39_CONTROL)
   loop_weather();
 #endif
 #ifdef SONOFF_CONTROL
@@ -536,7 +536,7 @@ void loop() {
 #if defined(MAXBOTIX_CONTROL) || defined(HCSR04_CONTROL)
     refresh_sonar(flagForce);
 #endif
-#ifdef DHT22_CONTROL
+#if defined(DHT22_CONTROL) || defined(GY39_CONTROL)
     refresh_weather(flagForce);
 #endif
 #ifdef SONOFF_CONTROL

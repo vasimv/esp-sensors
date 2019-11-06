@@ -29,7 +29,13 @@ extern float temperatureCurrent;
 // Last humidity read
 extern float humidityCurrent;
 
-// Check/report DHT22 readings flag
-extern boolean FlagReportDHT;
+// Last pressure read (only for GY-39)
+extern float pressureCurrent;
+
+// Last illumination read (only for GY-39)
+extern float illuminationCurrent;
+
+// Check/report DHT22 or GY-39 readings flag
+extern boolean FlagReportWeather;
 
 #endif

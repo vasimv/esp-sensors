@@ -1,5 +1,6 @@
 // 4ch dimmer
 
+#include <Arduino.h>
 #include <SoftwareSerial.h>
 #include "dimmer.h"
 #include "mqtt-support.h"
@@ -35,7 +36,7 @@ unsigned long lastChangeEffect = 0;
 uint8_t stepEffect = 0;
 
 // set up a new serial port
-SoftwareSerial mySerial =  SoftwareSerial(rxPin, txPin);
+SoftwareSerial mySerial(rxPin, txPin, false, 64, 64);
 
 // Set LEDs according ALL led status (with effects)
 void SetAllLED() {

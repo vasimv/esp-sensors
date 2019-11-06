@@ -26,8 +26,11 @@
 // IR and X-band radio movement sensors (conflicts with THERMOSTAT_CONTROL and SONOFF_CONTROL!), moveir.cpp
 #define MOVEMENT_CONTROL
 
-// DHT22 weather sensor (must be included for THERMOSTAT_CONTROL), weather.cpp
+// DHT22 weather sensor (must be included for THERMOSTAT_CONTROL, conflicts with GY39_CONTROL!), weather.cpp
 #define DHT22_CONTROL
+
+// GY-39 weather sensor over serial port (conflicts with DHT22_CONTROL!), weather.cpp
+// #define GY39_CONTROL
 
 // Sonoff basic and Sonoff touch (conflicts with MOVEMENT_CONTROL!), switch.cpp
 // #define SONOFF_CONTROL
@@ -89,6 +92,9 @@
 // DHT22 pin
 #define DHTPIN 5
 
+// GY39 pin
+#define GY39PIN 5
+
 // Internal LED and button pins
 #define LED 2
 #define BUTTON 0
@@ -132,6 +138,9 @@
 #define TOPIC_DHT "DHT"
 #define TOPIC_TEMPERATURE "TEMPERATURE"
 #define TOPIC_HUMIDITY "HUMIDITY"
+#define TOPIC_GY39 "GY39"
+#define TOPIC_ILLUMINATION "ILLUMINATION"
+#define TOPIC_PRESSURE "PRESSURE"
 
 // switch.cpp
 #define TOPIC_RELAY "RELAY"

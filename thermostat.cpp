@@ -55,7 +55,7 @@ unsigned long lastThermostat = 0;
 // must be called from loop()
 void loop_thermostat() {
   // We turn on DHT22 always
-  FlagReportDHT = true;
+  FlagReportWeather = true;
 
   // We process button press without MQTT in thermostat mode
   if ((digitalRead(BUTTON) == LOW) && ((millis() - lastButtonPress) > 1000)) {
