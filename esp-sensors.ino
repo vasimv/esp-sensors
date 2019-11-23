@@ -382,6 +382,9 @@ void setup() {
   setup_thermostat();
 #endif
 
+  ESP.wdtDisable();
+  ESP.wdtEnable(3000);
+
   EEPROM.begin(512);
 #ifdef DEBUG
   Serial.print("Signature in EEPROM: ");
@@ -565,5 +568,6 @@ void loop() {
   delayNeeded = 10 - (millis() - lastCycle);
   if (delayNeeded <= 0)
     delayNeeded = 1;
+  ESP.wdtFeed();
   delay(delayNeeded);
 } // void loop()
