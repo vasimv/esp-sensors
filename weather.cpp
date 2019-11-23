@@ -50,7 +50,7 @@ void pnp_weather() {
 
 // subscribe to MQTT topics
 void subscribe_weather() {
-#ifdef DTH22_CONTROL
+#ifdef DHT22_CONTROL
   subscribe_mqtt(TOPIC_DHT);
 #endif
 #ifdef GY39_CONTROL
@@ -76,7 +76,7 @@ boolean mqtt_weather(char *topicCut, char *payload) {
   return false;
 } // boolean mqtt_weather(char *topicCut, char *payload)
 
-#ifdef DTH22_CONTROL
+#ifdef DHT22_CONTROL
 DHT_Unified dht(DHTPIN, DHT22);
 uint32_t lastDHT = 0;
 
