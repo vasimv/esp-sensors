@@ -292,8 +292,12 @@ void checkConnection() {
       if (!FlagConfigure)
         setupWifi(true);
       else {
-        if (signatureConf && ((millis() - startConfigure) > 180000))
+        if (signatureConf && ((millis() - startConfigure) > 180000)) {
+#ifdef RESTART_AFTER_CONFIGURE 
+          ESP.restart();
+#endif
           setupWifi(false);
+        }
       }
     }
     return;

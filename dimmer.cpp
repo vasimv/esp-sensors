@@ -150,9 +150,20 @@ void SendLED() {
 
 // Setup hardware (pins, etc)
 void setup_dimmer() {
+#ifndef DIMMER_SIMPLE_LEDS
   pinMode(RS485_DE_PIN, OUTPUT);
   digitalWrite(RS485_DE_PIN, LOW);
   mySerial.begin(38400);
+#else
+  pinMode(LED_RED_PIN, OUTPUT);
+  digitalWrite(LED_RED_PIN, LOW);
+  pinMode(LED_BLUE_PIN, OUTPUT);
+  digitalWrite(LED_BLUE_PIN, LOW);
+  pinMode(LED_GREEN_PIN, OUTPUT);
+  digitalWrite(LED_GREEN_PIN, LOW);
+  pinMode(LED_WHITE_PIN, OUTPUT);
+  digitalWrite(LED_WHITE_PIN, LOW);
+#endif
 
   memset((void *) cLED, 0, sizeof(cLED));
   memset((void *) tLED, 0, sizeof(cLED));
@@ -165,7 +176,14 @@ void loop_dimmer() {
   // Repeat dimmer set frame every second (just in case)
   if (!FlagChangeLED && (millis() - lastRepeat) > 1000)
     FlagChangeLED = 1;
+#ifndef DIMMER_SIMPLE_LEDS
   SendLED();
+#else
+  analogWrite(LED_RED_PIN, cLED[0]);
+  analogWrite(LED_GREEN_PIN, cLED[1]);
+  analogWrite(LED_BLUE_PIN, cLED[2]);
+  analogWrite(LED_WHITE_PIN, cLED[3]);
+#endif
 } // void loop_dimmer()
 
 // periodic refreshing values to MQTT

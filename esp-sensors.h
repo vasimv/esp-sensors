@@ -10,6 +10,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+// Call ESP.restart() after timeout in configure mode
+#define RESTART_AFTER_CONFIGURE
+
 // What modules to use:
 // HC-SR04 sonar (conflicts with MAXBOTIX_CONTROL!), sonar.cpp
 // #define HCSR04_CONTROL
@@ -19,6 +22,10 @@
 
 // Modbus 4-ch dimmer (conflicts with MAXBOTIX_CONTROL!), dimmer.cpp
 #define DIMMER_CONTROL
+
+// Switch to direct four LEDs control instead modbus dimmer [RGBW stripe with N-FET Mosfet control]
+// (conflicts with MOVEMENT_CONTROL, HCSR04_CONTROL, SONOFF_CONTROL, MAXBOTIX_CONTROL, THERMOSTAT_CONTROL!), dimmer.cpp
+// #define DIMMER_SIMPLE_LEDS
 
 // Simple thermostat control (conflicts with MOVEMENT_CONTROL and SONOFF_CONTROL!), thermostat.cpp
 // #define THERMOSTAT_CONTROL
@@ -107,6 +114,11 @@
 // Sonoff basic and Sonoff touch AC relay pin
 #define RELAY 12
 
+// Four LEDs control
+#define LED_RED_PIN 14
+#define LED_BLUE_PIN 13
+#define LED_GREEN_PIN 4
+#define LED_WHITE_PIN 12
 
 // MQTT Topics names
 // esp-sensors.cpp
