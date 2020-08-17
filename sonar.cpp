@@ -5,7 +5,7 @@
 #ifdef MAXBOTIX_CONTROL
 #include <SoftwareSerial.h>
 
-SoftwareSerial mySerial =  SoftwareSerial(rxPin, txPin);
+SoftwareSerial mySerial =  SoftwareSerial(SW_rxPin, SW_txPin, false);
 #endif
 
 // publish PNP information to MQTT

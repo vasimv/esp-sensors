@@ -305,6 +305,7 @@ void checkConnection() {
 
   if (!connected) {
     // OTA setup
+    delay(20);
     ArduinoOTA.setPort(8266);
     ArduinoOTA.setHostname(mqttClientName);
     ArduinoOTA.setPassword(OTA_UPLOAD_PASS);
@@ -340,7 +341,7 @@ void checkConnection() {
         delay(500);
       }
 #else
-      delay(1000);
+      delay(10);
 #endif
       numAttempts++;
       // Check if we have enough of this and start in configure mode

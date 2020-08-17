@@ -18,20 +18,20 @@ boolean check_mqtt();
 // Internal mqtt stuff
 void mqtt_loop();
 
-// Publish PNP info to MQTT
+// Publish PNP info to MQTT (will add topic+"_CURRENT" output topic for any input topic)
 void pnp_mqtt(char *topic, char *name, char *groups, char *type, char *min, char *max);
 
 // Subscribe to MQTT topics
 void subscribe_mqtt(char *topic);
 
 // Publish to topic (int)
-void publish_mqttI(char *topic, int value);
+void publish_mqttI(char *topic, int value, boolean verification = false);
 
 // Publish to topic (string)
-void publish_mqttS(char *topic, char *value);
+void publish_mqttS(char *topic, char *value, boolean verification = false);
 
 // Publish to topic (float)
-void publish_mqttF(char *topic, float value);
+void publish_mqttF(char *topic, float value, boolean verification = false);
 
 // Compare string to topic name
 boolean cmpTopic(char *incoming, char *topic);

@@ -147,11 +147,13 @@ void refresh_weather(boolean flagForce) {
       publish_mqttF(TOPIC_HUMIDITY, humidityCurrent);
     }
   }
+  if (flagForce)
+    publish_mqttS(TOPIC_DHT, (char *) (FlagReportWeather ? "ON" : "OFF"), true);
 } // void refresh_weather(boolean flagForce)
 #endif
 
 #ifdef GY39_CONTROL
-SoftwareSerial sUart(GY39PIN, SW_SERIAL_UNUSED_PIN, false, 64,0);
+SoftwareSerial sUart(GY39PIN, SW_SERIAL_UNUSED_PIN, false);
 
 // Setup hardware (pins, etc)
 void setup_weather() {
@@ -309,5 +311,7 @@ void refresh_weather(boolean flagForce) {
       publish_mqttF(TOPIC_ILLUMINATION, illuminationCurrent);
     }
   }
+  if (flagForce)
+    publish_mqttS(TOPIC_GY39, (char *) (FlagReportWeather ? "ON" : "OFF"), true);
 } // void refresh_weather(boolean flagForce)
 #endif

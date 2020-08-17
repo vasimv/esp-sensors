@@ -27,6 +27,12 @@
 // (conflicts with MOVEMENT_CONTROL, HCSR04_CONTROL, SONOFF_CONTROL, MAXBOTIX_CONTROL, THERMOSTAT_CONTROL!), dimmer.cpp
 // #define DIMMER_SIMPLE_LEDS
 
+// Fast turning off when gradually is on
+//#define DIMMER_GRADUALLY_FAST_OFF
+
+// Slowly turn on dimmer at start
+#define DIMMER_START_FULL
+
 // Simple thermostat control (conflicts with MOVEMENT_CONTROL and SONOFF_CONTROL!), thermostat.cpp
 // #define THERMOSTAT_CONTROL
 
@@ -34,7 +40,7 @@
 #define MOVEMENT_CONTROL
 
 // DHT22 weather sensor (must be included for THERMOSTAT_CONTROL, conflicts with GY39_CONTROL!), weather.cpp
-#define DHT22_CONTROL
+// #define DHT22_CONTROL
 
 // GY-39 weather sensor over serial port (conflicts with DHT22_CONTROL!), weather.cpp
 // #define GY39_CONTROL
@@ -72,7 +78,7 @@
 // OTA firmware upload password
 #define OTA_UPLOAD_PASS "Bi38s2iw"
 
-// Dimmer's PWM maximum
+// Dimmer's PWM maximum (must be 255/511/1023
 #define LED_PWMRANGE 1023
 
 // Hystersis of thermostat regulation (in celsius)
@@ -85,8 +91,8 @@
 #define HCSR04_TRIG 15
 
 // Serial port pins (for dimmer or maxbotix)
-#define rxPin 16
-#define txPin 4
+#define SW_rxPin 16
+#define SW_txPin 4
 #define RS485_DE_PIN 15
 
 // Thermostat pins
@@ -130,6 +136,7 @@
 #define TOPIC_LED "LED"
 #define TOPIC_ADC "ADC"
 #define TOPIC_ADC_CONTROL "ADCSWITCH"
+#define TOPIC_MILLIS "MILLIS"
 
 // moveir.cpp
 #define TOPIC_IR_SENSE "MOVEIR"
@@ -172,5 +179,9 @@
 
 extern WiFiClient wifi;
 extern PubSubClient myClient;
+
+#ifndef SW_SERIAL_UNUSED_PIN
+#define SW_SERIAL_UNUSED_PIN -1
+#endif
 
 #endif

@@ -15,6 +15,7 @@ void pnp_internal() {
   pnp_mqtt(TOPIC_LED, "Built-in LED", "Builtin LEDs Switches", "I:Switch", NULL, NULL);
   pnp_mqtt(TOPIC_BUTTON, "FLASH button", "Builtin Switches Buttons", "O:Switch", NULL, NULL);
   pnp_mqtt(TOPIC_ADC, "ADC read", "Analogue ADC", "O:Number", "0", "1023");
+  pnp_mqtt(TOPIC_MILLIS, "Millis time", "Time", "O:Number", "0", "9999999999");
   pnp_mqtt(TOPIC_ADC_CONTROL, "ADC on/off", "Builtin Switches ADC", "I:Switch", NULL, NULL);
 } // void pnp_internal()
 
@@ -54,8 +55,12 @@ int lastADC = -1;
 
 // periodic refreshing values to MQTT
 void refresh_internal(boolean flagForce) {
-  if (flagForce)
+  if (flagForce) {
     publish_mqttS(TOPIC_BUTTON, (char *) (buttonState ? "OFF" : "ON"));
+    publish_mqttS(TOPIC_ADC_CONTROL, (char *) (FlagADC ? "ON" : "OFF"), true);
+    publish_mqttS(TOPIC_LED, (char *) (ledState ? "ON" : "OFF"), true);
+    publish_mqttI(TOPIC_MILLIS, millis());
+  }
 
   if (FlagADC) {
     if (flagForce || (analogRead(A0) != lastADC)) {

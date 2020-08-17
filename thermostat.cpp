@@ -115,6 +115,11 @@ void refresh_thermostat(boolean flagForce) {
   if (flagForce) {
     publish_mqttS(TOPIC_COMPRESSOR, (char *) ((digitalRead(COMPRESSOR_RELAY) == HIGH) ? "ON" : "OFF"));
     publish_mqttS(TOPIC_FAN, (char *) ((digitalRead(FAN_RELAY) == HIGH) ? "ON" : "OFF"));
+    publish_mqttS(TOPIC_FAN_AUTO, (char *) (fanAuto ? "ON" : "OFF"), true);
+    publish_mqttS(TOPIC_COMPRESSOR_AUTO, (char *) (compressorAuto ? "ON" : "OFF"), true);
+    publish_mqttS(TOPIC_FAN_MANUAL, (char *) (fanOverride ? "ON" : "OFF"), true);
+    publish_mqttS(TOPIC_LED_OFF, (char *) ((digitalRead(LED_OFF) == HIGH) ? "ON" : "OFF"), true);
+    publish_mqttS(TOPIC_LED_ON, (char *) ((digitalRead(LED_ON) == HIGH) ? "ON" : "OFF"), true);
   }
 } // void refresh_thermostat()
 

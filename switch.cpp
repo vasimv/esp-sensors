@@ -53,8 +53,11 @@ void loop_switch() {
 
 // periodic refreshing values to MQTT
 void refresh_switch(boolean flagForce) {
-  if (flagForce)
+  if (flagForce) {
     publish_mqttS(TOPIC_RELAY, (char *) (relayState ? "ON" : "OFF"));
+    publish_mqttS(TOPIC_RELAY, (char *) (relayState ? "ON" : "OFF"), true);
+    publish_mqttS(TOPIC_AUTO_RELAY, (char *) (FlagRelay ? "ON" : "OFF"), true);
+  }
 } // void refresh_switch(boolean flagForce)
 
 // hook for incoming MQTT messages

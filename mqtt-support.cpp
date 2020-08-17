@@ -21,8 +21,11 @@ void mqtt_loop() {
 char tmpMqttTopic[256];
 
 // Use unique MQTT prefix to generate topic name (be sure outBuffer has enough space - +32 bytes!!!)
-void generateMqttTopic(char *outBuffer, char *topic, char *subtopic) {
-  sprintf(outBuffer, "%s%s/%s", mqttPrefixName, topic, subtopic);
+void generateMqttTopic(char *outBuffer, char *topic, char *subtopic, boolean verification) {
+  if (!verification)
+    sprintf(outBuffer, "%s%s/%s", mqttPrefixName, topic, subtopic);
+  else
+    sprintf(outBuffer, "%s%s_CURRENT/%s", mqttPrefixName, topic, subtopic);
 } // void generateMqttTopic(char *outbuffer, char *topic, char *subtopic)
 
 // Connect to MQTT broker, returns true if connected
@@ -45,6 +48,8 @@ boolean connect_mqtt(char *mqttServer, char *mqttClientName, char *mqttUser, cha
 } // boolean connect_mqtt(char *mqttServer, char *mqttClientName, char *mqttUser, char *mqttPass, std::function<void(char*, uint8_t*, unsigned int)> mqttCallback)
 
 char tmpBuf[256];
+char tmpBufO[256];
+char tmpBufT[256];
 
 // Publish Plug&Play info to MQTT
 void pnp_mqtt(char *topic, char *name, char *groups, char *type, char *min, char *max) {
@@ -83,13 +88,21 @@ void pnp_mqtt(char *topic, char *name, char *groups, char *type, char *min, char
     myClient.publish(tmpBuf, max, true);
   }
   delay(10);
+
+  // Add output _CURRENT topic for input topics
+  if (type[0] == 'I') {
+    snprintf(tmpBufO, sizeof(tmpBufO) - 1, "%s_CURRENT", topic);
+    snprintf(tmpBufT, sizeof(tmpBufT) - 1, "%s", type);
+    tmpBufT[0] = 'O';
+    pnp_mqtt(tmpBufO, "", "Verification", tmpBufT, min, max);
+  }
 } // void pnp_mqtt(char *topic, char *name, char *groups, char *type, char *min, char *max) 
 
 // Subscribe to MQTT topics
 void subscribe_mqtt(char *topic) {
   if (!myClient.connected())
     return;
-  generateMqttTopic(tmpMqttTopic, topic, "status");
+  generateMqttTopic(tmpMqttTopic, topic, "status", false);
   myClient.subscribe(tmpMqttTopic);
   myClient.loop();
 #ifdef DEBUG
@@ -102,16 +115,16 @@ void subscribe_mqtt(char *topic) {
 char tmpValue[64];
 
 // Publish to topic (int)
-void publish_mqttI(char *topic, int value) {
+void publish_mqttI(char *topic, int value, boolean verification) {
   sprintf(tmpValue, "%d", value);
-  publish_mqttS(topic, tmpValue);
+  publish_mqttS(topic, tmpValue, verification);
 } // void publish_mqttI(char *topic, int value)
 
 // Publish to topic (string)
-void publish_mqttS(char *topic, char *value) {
+void publish_mqttS(char *topic, char *value, boolean verification) {
   if (!myClient.connected())
     return;
-  generateMqttTopic(tmpMqttTopic, topic, "status");
+  generateMqttTopic(tmpMqttTopic, topic, "status", verification);
   myClient.publish(tmpMqttTopic, value, true);
 #ifdef DEBUG
   Serial.print(tmpMqttTopic);
@@ -121,7 +134,7 @@ void publish_mqttS(char *topic, char *value) {
 } // void publish_mqttS(char *topic, char *value)
 
 // Publish to topic (float)
-void publish_mqttF(char *topic, float value) {
+void publish_mqttF(char *topic, float value, boolean verification) {
   char *p;
   char floatBuf[16];
 
@@ -129,7 +142,7 @@ void publish_mqttF(char *topic, float value) {
   // Cut leading space
   while (*p == ' ')
     p++;
-  publish_mqttS(topic, p);
+  publish_mqttS(topic, p, verification);
 } // void publish_mqttF(char *topic, float value)
 
 // Compare message for "ON"
