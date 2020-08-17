@@ -35,8 +35,44 @@ unsigned long startEffects = 0;
 unsigned long lastChangeEffect = 0;
 uint8_t stepEffect = 0;
 
+// Luminosity->PWM table (64->1024)
+// thank to Jared Sanson, https://jared.geek.nz/2013/feb/linear-led-pwm
+const uint16_t cie[127] = {
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 
+  9, 10, 11, 12, 13, 14, 15, 17, 18, 19, 
+  21, 23, 24, 26, 28, 30, 32, 34, 36, 38, 
+  41, 43, 46, 49, 51, 54, 57, 60, 63, 67, 
+  70, 74, 77, 81, 85, 89, 93, 98, 102, 107, 
+  111, 116, 121, 126, 131, 137, 142, 148, 154, 160, 
+  166, 172, 178, 185, 192, 199, 206, 213, 220, 228, 
+  236, 244, 255, 260, 268, 277, 286, 295, 304, 313, 
+  323, 333, 343, 353, 363, 374, 385, 395, 407, 418, 
+  430, 441, 453, 466, 478, 491, 504, 511, 530, 544, 
+  557, 571, 586, 600, 615, 630, 645, 660, 676, 692, 
+  708, 725, 741, 758, 775, 793, 811, 828, 847, 865, 
+  884, 903, 922, 942, 962, 982, 1002, 1023, 
+};
+
 // set up a new serial port
-SoftwareSerial mySerial(rxPin, txPin, false, 64);
+SoftwareSerial mySerial(SW_rxPin, SW_txPin, false);
+
+// Find closest number in cie table
+int findCie(uint16_t pwm) {
+  int prevP = 0;
+  int i;
+
+  for (i = 0; i < (sizeof(cie) / sizeof(cie[0])); i++) {
+    if (pwm == cie[i])
+      return i;
+    if (pwm < cie[i]) {
+      if (abs(pwm - prevP) < abs(pwm - cie[i]))
+        return i-1;
+      return i;
+    }
+    prevP = cie[i];
+  }
+  return i - 1;
+} // int findCie(uint16_t pwm)
 
 // Set LEDs according ALL led status (with effects)
 void SetAllLED() {
@@ -55,12 +91,23 @@ void SetAllLED() {
     // Set luminosity gradually
     for (i = 0; i < 4; i++) {
       if (cLED[i] != tLED[i]) {
-        diff = tLED[i] - cLED[i];
-        if (diff > 5)
-          diff = 5;
-        if (diff < -5)
-          diff = -5;
-        cLED[i] += diff;
+        int nCie = findCie(cLED[i]);
+#ifdef DEBUG
+        Serial.printf("findCie(%d)=%d %u ms\n", cLED[i], nCie, millis());
+#endif
+        if (tLED[i] < cLED[i])
+          nCie--;
+        else
+          nCie++;
+        if (nCie < 0) {
+          nCie = 0;
+          tLED[i] = cie[nCie];
+        }
+        if (nCie > (sizeof(cie)/sizeof(cie[0]))) {
+          nCie--;
+          tLED[i] = cie[nCie];
+        }
+        cLED[i] = cie[nCie];
         FlagChangeLED = 2;
       }
     }
@@ -166,12 +213,25 @@ void setup_dimmer() {
 #endif
 
   memset((void *) cLED, 0, sizeof(cLED));
+#ifdef DIMMER_START_FULL
+  tLED[0] = LED_PWMRANGE;
+  tLED[1] = LED_PWMRANGE;
+  tLED[2] = LED_PWMRANGE;
+  tLED[3] = LED_PWMRANGE;
+  FlagGradually = 1;
+#else
   memset((void *) tLED, 0, sizeof(cLED));
+#endif
   FlagChangeLED = 2;
 } // void setup_dimmer()
 
+unsigned long lastDimmer = 0;
+
 // must be called from loop()
 void loop_dimmer() {
+  if ((millis() - lastDimmer) < 40)
+    return;
+  lastDimmer = millis();
   SetAllLED();
   // Repeat dimmer set frame every second (just in case)
   if (!FlagChangeLED && (millis() - lastRepeat) > 1000)
@@ -188,6 +248,13 @@ void loop_dimmer() {
 
 // periodic refreshing values to MQTT
 void refresh_dimmer(boolean flagForce) {
+  if (flagForce) {
+    publish_mqttS(TOPIC_GRADUALLY, (char *) (FlagGradually ? "ON" : "OFF"), true);
+    publish_mqttI(TOPIC_R_LED, (cLED[0] * 100) / LED_PWMRANGE, true);
+    publish_mqttI(TOPIC_G_LED, (cLED[1] * 100) / LED_PWMRANGE, true);
+    publish_mqttI(TOPIC_B_LED, (cLED[2] * 100) / LED_PWMRANGE, true);
+    publish_mqttI(TOPIC_W_LED, (cLED[3] * 100) / LED_PWMRANGE, true);
+  }
 } // void refresh_dimmer(boolean flagForce)
 
 // Check message for ON/OFF or number in percents
@@ -201,13 +268,17 @@ int dimmerLight(char *payload) {
 
 // Check case when we're turning off lights with gradually on
 void checkGradually(int lightNum) {
+  // Set target to closest value of cie table
+  tLED[lightNum] = cie[findCie(tLED[lightNum])];
   int differ = cLED[lightNum] - tLED[lightNum];
 
   // Not gradually or turning on - just set choosed level
   if (!FlagGradually || (differ <= 0))
     return;
   // Gradually OFF - drop level to 50% at first!
+#ifdef DIMMER_GRADUALLY_FAST_OFF
   cLED[lightNum] = cLED[lightNum] - differ / 2; 
+#endif
 } // void checkGradually(int lightNum)
 
 // hook for incoming MQTT messages
