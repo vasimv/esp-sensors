@@ -53,6 +53,8 @@ const uint16_t cie[127] = {
   884, 903, 922, 942, 962, 982, 1002, 1023, 
 };
 
+uint16_t cieR[LED_PWMRANGE + 1];
+
 // set up a new serial port
 SoftwareSerial mySerial(SW_rxPin, SW_txPin, false);
 
@@ -74,6 +76,13 @@ int findCie(uint16_t pwm) {
   return i - 1;
 } // int findCie(uint16_t pwm)
 
+// Fast search in cieR table
+int findCieR(uint16_t pwm) {
+  if (pwm > LED_PWMRANGE)
+    pwm = LED_PWMRANGE;
+  return cieR[pwm];
+} // int findCieR(uint16_t pwm)
+
 // Set LEDs according ALL led status (with effects)
 void SetAllLED() {
   int i;
@@ -91,9 +100,9 @@ void SetAllLED() {
     // Set luminosity gradually
     for (i = 0; i < 4; i++) {
       if (cLED[i] != tLED[i]) {
-        int nCie = findCie(cLED[i]);
+        int nCie = findCieR(cLED[i]);
 #ifdef DEBUG
-        Serial.printf("findCie(%d)=%d %u ms\n", cLED[i], nCie, millis());
+        Serial.printf("findCieR(%d)=%d %u ms\n", cLED[i], nCie, millis());
 #endif
         if (tLED[i] < cLED[i])
           nCie--;
@@ -223,13 +232,15 @@ void setup_dimmer() {
   memset((void *) tLED, 0, sizeof(cLED));
 #endif
   FlagChangeLED = 2;
+  for (int i = 0; i <= LED_PWMRANGE; i++)
+    cieR[i] = findCie(i);
 } // void setup_dimmer()
 
 unsigned long lastDimmer = 0;
 
 // must be called from loop()
 void loop_dimmer() {
-  if ((millis() - lastDimmer) < 40)
+  if ((millis() - lastDimmer) < 30)
     return;
   lastDimmer = millis();
   SetAllLED();
@@ -269,7 +280,7 @@ int dimmerLight(char *payload) {
 // Check case when we're turning off lights with gradually on
 void checkGradually(int lightNum) {
   // Set target to closest value of cie table
-  tLED[lightNum] = cie[findCie(tLED[lightNum])];
+  tLED[lightNum] = cie[findCieR(tLED[lightNum])];
   int differ = cLED[lightNum] - tLED[lightNum];
 
   // Not gradually or turning on - just set choosed level
